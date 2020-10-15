@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import {Text, View, Button} from 'react-native';
 import Slider from '@react-native-community/slider';
 import styles from './styles';
-import EqModule from './EqModule';
-// import ToastExample from './ToastExample';
+import EqModule from '../EqModule';
+// import ToastExample from '../ToastExample';
 
 const EqMain = () => {
     // const [sliderValue, setSliderValue] = useState(0);
