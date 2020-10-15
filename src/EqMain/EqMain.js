@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import {Text, View} from 'react-native';
 import Slider from '@react-native-community/slider';
 import styles from './styles';
+import ToastExample from './ToastExample';
 
 const EqMain = () => {
     const [sliderValue, setSliderValue] = useState(0);
+    ToastExample.show('Awesome', ToastExample.SHORT);
     const onSliderChange = (value) => {
         console.log(value);
         setSliderValue(value);
