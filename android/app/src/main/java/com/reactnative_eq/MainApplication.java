@@ -1,6 +1,7 @@
 package com.reactnative_eq;
 
 import com.reactnative_eq.CustomToastPackage;
+import com.reactnative_eq.CustomEqPackage;
 
 import android.app.Application;
 import android.content.Context;
@@ -29,6 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           packages.add(new CustomToastPackage());
+          packages.add(new CustomEqPackage());
           return packages;
         }
 
