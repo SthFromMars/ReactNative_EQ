@@ -23,7 +23,6 @@ DerivedData
 
 # Android/IntelliJ
 #
-build/
 .idea
 .gradle
 local.properties
@@ -59,9 +58,4 @@ buck-out/
 /ios/Pods/
 
 # Project exclude paths
-/android/*
-!/android/app/
-/android/app/*
-!/android/app/src/
-/android/app/src/debug
 /ios/
