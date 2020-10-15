@@ -63,4 +63,5 @@ buck-out/
 !/android/app/
 /android/app/*
 !/android/app/src/
+/android/app/src/debug
 /ios/
