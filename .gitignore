@@ -59,3 +59,4 @@ buck-out/
 
 # Project exclude paths
 /ios/
+#/android/app/src/main/res/raw/*

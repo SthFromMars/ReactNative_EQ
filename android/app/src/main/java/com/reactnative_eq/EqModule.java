@@ -1,5 +1,8 @@
 package com.reactnative_eq;
 
+import android.net.Uri;
+import java.io.File;
+import android.app.Activity;
 import android.media.audiofx.BassBoost;
 import android.widget.Toast;
 import android.media.MediaPlayer;
@@ -21,12 +24,16 @@ public class EqModule extends ReactContextBaseJavaModule {
     private static final String DURATION_SHORT_KEY = "SHORT";
     private static final String DURATION_LONG_KEY = "LONG";
 
-//    private Equalizer eq = new Equalizer(0, 0);
-//    private BassBoost bb = new BassBoost(0, 0);
+    private Equalizer eq = new Equalizer(Integer.MAX_VALUE, 0);
+    private BassBoost bb = new BassBoost(Integer.MAX_VALUE, 0);
 
     EqModule(ReactApplicationContext context) {
         super(context);
         reactContext = context;
+        this.eq.setEnabled(true);
+        this.eq.usePreset((short) 0);
+        this.bb.setEnabled(true);
+        this.bb.setStrength((short) 0);
     }
 
     @Override
@@ -34,38 +41,17 @@ public class EqModule extends ReactContextBaseJavaModule {
         return "EqModule";
     }
 
-    @Override
-    public Map<String, Object> getConstants() {
-        final Map<String, Object> constants = new HashMap<>();
-        constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
-        constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
-        return constants;
-    }
-
-    @ReactMethod
-    public void show(String message, int duration) {
-        Toast.makeText(getReactApplicationContext(), message, duration).show();
-    }
-
     @ReactMethod
     public void getEqSettings(Callback currentEqSettings) {
-//        MediaPlayer mediaPlayer = new MediaPlayer();
-//        Equalizer eq = new Equalizer(0, mediaPlayer.getAudioSessionId());
-        BassBoost bb = new BassBoost(0, 0);
-        Equalizer eq = new Equalizer(0, 0);
-        currentEqSettings.invoke("This is Java talking\n" + eq.getProperties().toString() + "\n" + bb.getProperties().toString());
+        Equalizer eq = this.eq;
+        BassBoost bb = this.bb;
+        currentEqSettings.invoke(eq.getProperties().toString() + "\n" + bb.getProperties().toString() + "\n Presets nr.: " + eq.getNumberOfPresets());
 
-    }
-
-    @ReactMethod
-    public void setBassBoostLevel(int level) {
-        BassBoost bb = new BassBoost(0, 0);
-        bb.setStrength( (short) level);
     }
 
     @ReactMethod
     public void setHighBass() {
-        Equalizer eq = new Equalizer(0, 0);
+        Equalizer eq = this.eq;
         short bandCount = eq.getNumberOfBands();
         int bassBands = (int) (bandCount/2);
 
@@ -74,20 +60,20 @@ public class EqModule extends ReactContextBaseJavaModule {
         for(int i=0; i<bandCount; i++){
             short setTo;
             if(i<bassBands){
-                setTo = bandLevelRange[1];
+                setTo =(short) (bandLevelRange[1]-100);
             } else {
-                setTo = bandLevelRange[0];
+                setTo =(short) (bandLevelRange[0]+100);
             }
             eq.setBandLevel((short) i, setTo);
         }
 
-        BassBoost bb = new BassBoost(0, 0);
+        BassBoost bb = this.bb;
         bb.setStrength((short) 1000);
     }
 
     @ReactMethod
     public void setLowBass() {
-        Equalizer eq = new Equalizer(0, 0);
+        Equalizer eq = this.eq;
         short bandCount = eq.getNumberOfBands();
         int bassBands = (int) (bandCount/2);
 
@@ -96,14 +82,14 @@ public class EqModule extends ReactContextBaseJavaModule {
         for(int i=0; i<bandCount; i++){
             short setTo;
             if(i<bassBands){
-                setTo = bandLevelRange[0];
+                setTo =(short) (bandLevelRange[0]+100);
             } else {
-                setTo = bandLevelRange[1];
+                setTo =(short) (bandLevelRange[1]-100);
             }
             eq.setBandLevel((short) i, setTo);
         }
 
-        BassBoost bb = new BassBoost(0, 0);
+        BassBoost bb = this.bb;
         bb.setStrength((short) 0);
     }
 }
