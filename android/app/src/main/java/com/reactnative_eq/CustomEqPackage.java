@@ -1,5 +1,7 @@
 package com.reactnative_eq;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,14 +13,16 @@ import java.util.List;
 
 public class CustomEqPackage implements ReactPackage {
 
+    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
         return Collections.emptyList();
     }
 
+    @NonNull
     @Override
     public List<NativeModule> createNativeModules(
-            ReactApplicationContext reactContext) {
+            @NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
         modules.add(new EqModule(reactContext));
