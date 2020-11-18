@@ -5,10 +5,13 @@ import android.media.audiofx.Equalizer;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 
 
 public class EqModule extends ReactContextBaseJavaModule {
@@ -16,6 +19,7 @@ public class EqModule extends ReactContextBaseJavaModule {
 
     private final Equalizer eq = new Equalizer(Integer.MAX_VALUE, 0);
     private final BassBoost bb = new BassBoost(Integer.MAX_VALUE, 0);
+    private final float stepCount = 15;
 
     EqModule(ReactApplicationContext context) {
         super(context);
@@ -33,53 +37,28 @@ public class EqModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getEqSettings(Callback currentEqSettings) {
-        Equalizer eq = this.eq;
-        BassBoost bb = this.bb;
-        currentEqSettings.invoke(eq.getProperties().toString() + "\n" + bb.getProperties().toString() + "\n Presets nr.: " + eq.getNumberOfPresets());
-
+        WritableArray properties = Arguments.createArray();
+        for(short level: eq.getProperties().bandLevels){
+            float maxBandLevel = eq.getBandLevelRange()[1];
+            int reactLevel = Math.round((float) level / (maxBandLevel / stepCount));
+            properties.pushInt(reactLevel);
+        }
+        currentEqSettings.invoke(properties);
     }
 
     @ReactMethod
-    public void setHighBass() {
-        Equalizer eq = this.eq;
-        short bandCount = eq.getNumberOfBands();
-        int bassBands = bandCount/2;
-
-        short[] bandLevelRange = eq.getBandLevelRange();
-
-        for(int i=0; i<bandCount; i++){
-            short setTo;
-            if(i<bassBands){
-                setTo =(short) (bandLevelRange[1]-100);
-            } else {
-                setTo =(short) (bandLevelRange[0]+100);
-            }
-            eq.setBandLevel((short) i, setTo);
+    public void setBand(int level, int index) {
+        short bandNr = (short) index;
+        if(level == 0) eq.setBandLevel(bandNr, (short) level);
+        else if(level > 0) {
+            float maxBandLevel = eq.getBandLevelRange()[1];
+            short androidLevel = (short) Math.round(maxBandLevel / stepCount * (float) level);
+            eq.setBandLevel(bandNr, androidLevel);
+        } else {
+            float minBandLevel = eq.getBandLevelRange()[0];
+            short androidLevel = (short) Math.round((-1) * minBandLevel / stepCount * (float) level);
+            eq.setBandLevel(bandNr, androidLevel);
         }
-
-        BassBoost bb = this.bb;
-        bb.setStrength((short) 1000);
     }
 
-    @ReactMethod
-    public void setLowBass() {
-        Equalizer eq = this.eq;
-        short bandCount = eq.getNumberOfBands();
-        int bassBands = bandCount/2;
-
-        short[] bandLevelRange = eq.getBandLevelRange();
-
-        for(int i=0; i<bandCount; i++){
-            short setTo;
-            if(i<bassBands){
-                setTo =(short) (bandLevelRange[0]+100);
-            } else {
-                setTo =(short) (bandLevelRange[1]-100);
-            }
-            eq.setBandLevel((short) i, setTo);
-        }
-
-        BassBoost bb = this.bb;
-        bb.setStrength((short) 0);
-    }
 }
