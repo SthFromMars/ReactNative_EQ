@@ -18,7 +18,7 @@ public class EqModule extends ReactContextBaseJavaModule {
 
 
     private final Equalizer eq = new Equalizer(Integer.MAX_VALUE, 0);
-    private final BassBoost bb = new BassBoost(Integer.MAX_VALUE, 0);
+    private BassBoost bb = new BassBoost(Integer.MAX_VALUE, 0);
     private final float stepCount = 15;
 
     EqModule(ReactApplicationContext context) {
@@ -47,6 +47,14 @@ public class EqModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getBbSettings(Callback currentBbSettings) {
+        WritableMap properties = Arguments.createMap();
+        properties.putBoolean("isSupported", bb.getStrengthSupported());
+        properties.putInt("strength", bb.getRoundedStrength());
+        currentBbSettings.invoke(properties);
+    }
+
+    @ReactMethod
     public void setBand(int level, int index) {
         short bandNr = (short) index;
         if(level == 0) eq.setBandLevel(bandNr, (short) level);
@@ -59,6 +67,17 @@ public class EqModule extends ReactContextBaseJavaModule {
             short androidLevel = (short) Math.round((-1) * minBandLevel / stepCount * (float) level);
             eq.setBandLevel(bandNr, androidLevel);
         }
+    }
+
+    @ReactMethod
+    public void setBb(int level) {
+        bb.setStrength((short) level);
+    }
+
+    @ReactMethod
+    public void refreshBb(Callback currentBbSettings) {
+        bb = new BassBoost(Integer.MAX_VALUE, 0);
+        getBbSettings(currentBbSettings);
     }
 
 }
