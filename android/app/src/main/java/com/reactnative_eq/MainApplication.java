@@ -1,6 +1,5 @@
 package com.reactnative_eq;
 
-
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
