@@ -1,9 +1,16 @@
 import React from 'react';
-import {View, Text, Button, Linking, ToastAndroid} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  Linking,
+  ToastAndroid,
+} from 'react-native';
 import Slider from '@react-native-community/slider';
 import styles from './styles';
 import EqModule from '../EqModule';
 import EqSlider from '../EqSlider/EqSlider';
+import * as NotificationService from '../NotificationService';
 
 class EqMain extends React.Component {
   constructor(props) {
@@ -26,10 +33,9 @@ class EqMain extends React.Component {
           eqValues: eqSettings,
           bb: bbSettings,
         });
-        console.log(JSON.stringify(eqSettings));
-        console.log(JSON.stringify(bbSettings));
       });
     });
+    NotificationService.show(this.state.activePreset);
   }
 
   bbOnChange(value) {
@@ -79,6 +85,10 @@ class EqMain extends React.Component {
             <Text>Bass boost: {this.state.bb.strength}</Text>
           </View>
         )}
+        <Button
+          title="close"
+          onPress={NotificationService.close}
+        />
         <Button title="refresh" onPress={this.refreshBb} />
         <Button title="open" onPress={this.openSpotify} />
         <View style={styles.eqView}>
