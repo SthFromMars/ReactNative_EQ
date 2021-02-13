@@ -1,5 +1,6 @@
 package com.reactnative_eq;
 
+import com.rnfs.RNFSPackage;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
@@ -27,7 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
-          packages.add(new CustomEqPackage());
+            packages.add(new CustomEqPackage());
+//            packages.add(new RNFSPackage());
 //          packages.add(new ReactNativePushNotificationPackage());
           return packages;
         }

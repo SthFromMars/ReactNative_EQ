@@ -13,19 +13,22 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class EqModule extends ReactContextBaseJavaModule {
 
 
     private final Equalizer eq = new Equalizer(Integer.MAX_VALUE, 0);
     private BassBoost bb = new BassBoost(Integer.MAX_VALUE, 0);
+    private int bbValue = 0;
     private final float stepCount = 15;
+    private Timer bbTimer;
 
     EqModule(ReactApplicationContext context) {
         super(context);
-        this.eq.setEnabled(true);
         this.eq.usePreset((short) 0);
-        this.bb.setEnabled(true);
         this.bb.setStrength((short) 0);
     }
 
@@ -33,6 +36,35 @@ public class EqModule extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "EqModule";
+    }
+
+    @ReactMethod
+    public void setStatus(boolean status, Callback callback) {
+        this.eq.setEnabled(status);
+        this.bb.setEnabled(status);
+        callback.invoke();
+    }
+
+    @ReactMethod
+    public void startBbTimer(){
+        bbTimer = new Timer();
+        TimerTask bbTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if(!bb.getStrengthSupported()){
+                    bb = new BassBoost(Integer.MAX_VALUE, 0);
+                    if(bb.getStrengthSupported()){
+                        bb.setStrength((short) bbValue);
+                    }
+                }
+            }
+        };
+        bbTimer.schedule(bbTimerTask, 0, 1000);
+    }
+
+    @ReactMethod
+    public void stopBbTimer(){
+        bbTimer.cancel();
     }
 
     @ReactMethod
@@ -71,7 +103,14 @@ public class EqModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setBb(int level) {
-        bb.setStrength((short) level);
+        try {
+            bb.setStrength((short) level);
+        } catch (Exception e) {
+            if(bb.getStrengthSupported()){
+                e.printStackTrace();
+            }
+        }
+        bbValue = level;
     }
 
     @ReactMethod
@@ -79,5 +118,4 @@ public class EqModule extends ReactContextBaseJavaModule {
         bb = new BassBoost(Integer.MAX_VALUE, 0);
         getBbSettings(currentBbSettings);
     }
-
 }

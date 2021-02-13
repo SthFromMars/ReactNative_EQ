@@ -1,107 +1,41 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Button,
-  Linking,
-  ToastAndroid,
-} from 'react-native';
-import Slider from '@react-native-community/slider';
+import {View, Button, Linking, ToastAndroid} from 'react-native';
 import styles from './styles';
 import EqModule from '../EqModule';
 import EqSlider from '../EqSlider/EqSlider';
 import * as NotificationService from '../NotificationService';
+import {connect} from 'react-redux';
+import BbSlider from '../BbSlider/BbSlider';
+import * as BbEnableService from '../BbEnableService';
+import {changeStatus, saveState} from '../../state/actions';
 
 class EqMain extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      eqValues: [0, 0, 0, 0, 0],
-      bb: {
-        strength: 0,
-        isSupported: false,
-      },
-    };
-    this.bbOnChange = this.bbOnChange.bind(this);
-    this.refreshBb = this.refreshBb.bind(this);
-  }
 
-  componentDidMount() {
-    EqModule.getEqSettings((eqSettings) => {
-      EqModule.getBbSettings((bbSettings) => {
-        this.setState({
-          eqValues: eqSettings,
-          bb: bbSettings,
-        });
-      });
-    });
-    NotificationService.show(this.state.activePreset);
-  }
-
-  bbOnChange(value) {
-    EqModule.setBb(value);
-    const bb = this.state.bb;
-    bb.strength = value;
-    this.setState({bb});
-  }
-
-  refreshBb() {
-    EqModule.refreshBb((settings) => {
-      this.setState({bb: settings});
-    });
-  }
-
-  eqOnChange(value, index) {
-    const {eqValues} = this.state;
-    eqValues[index] = value;
-    EqModule.setBand(value, index);
-    this.setState({eqValues});
-  }
-
-  async openSpotify() {
-    const supported = await Linking.canOpenURL('spotify://');
-    if (supported) {
-      await Linking.openURL('spotify://');
+  changeStatus() {
+    const enabled = this.props.enabled;
+    if (enabled) {
+      NotificationService.close();
+      BbEnableService.stop();
     } else {
-      ToastAndroid.show('Could not open Spotify', ToastAndroid.LONG);
+      NotificationService.show();
+      BbEnableService.start();
     }
+    EqModule.setStatus(!enabled, () => {});
+    this.props.changeStatus(!enabled);
   }
 
   render() {
     return (
       <View style={styles.view}>
-        {this.state.bb.isSupported && (
-          <View>
-            <Slider
-              value={this.state.bb.strength}
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={1000}
-              step={1}
-              minimumTrackTintColor="#444444"
-              maximumTrackTintColor="#000000"
-              onValueChange={this.bbOnChange}
-            />
-            <Text>Bass boost: {this.state.bb.strength}</Text>
-          </View>
-        )}
+        <BbSlider />
         <Button
-          title="close"
-          onPress={NotificationService.close}
+          title={this.props.enabled ? 'disable' : 'enable'}
+          onPress={() => this.changeStatus()}
         />
-        <Button title="refresh" onPress={this.refreshBb} />
-        <Button title="open" onPress={this.openSpotify} />
+        <Button title="save" onPress={this.props.saveState} />
         <View style={styles.eqView}>
-          {this.state.eqValues.map((value, index) => {
-            return (
-              <EqSlider
-                key={index}
-                value={value}
-                onChange={(changedValue) => {
-                  this.eqOnChange(changedValue, index);
-                }}
-              />
-            );
+          {[0, 1, 2, 3, 4].map((value) => {
+            return <EqSlider key={value} index={value} />;
           })}
         </View>
       </View>
@@ -109,4 +43,11 @@ class EqMain extends React.Component {
   }
 }
 
-export default EqMain;
+const mapStateToProps = (state) => {
+  return {
+    enabled: state.enabled,
+    bbValue: state.presets[state.activePreset].bb,
+  };
+};
+
+export default connect(mapStateToProps, {changeStatus, saveState})(EqMain);

@@ -1,0 +1,7 @@
+export const CHANGE_PRESET = 'CHANGE_PRESET';
+export const CHANGE_EQ_VALUE = 'CHANGE_EQ_VALUE';
+export const CHANGE_BB_VALUE = 'CHANGE_BB_VALUE';
+export const CHANGE_BB_STATUS = 'CHANGE_BB_STATUS';
+export const CHANGE_STATUS = 'CHANGE_STATUS';
+export const SET_STATE = 'SET_STATE';
+export const SAVE_STATE = 'SAVE_STATE';

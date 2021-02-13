@@ -1,47 +1,28 @@
 import PushNotification from 'react-native-push-notification';
-import EqModule from './EqModule';
+import {changePreset} from '../state/actions';
+import store from '../state/store';
 
 const channelId = 'EqNotificationChannel';
-let presets;
 
-export function initialize(presetsNew) {
-  presets = presetsNew;
+export function initialize() {
+  const state = store.getState();
   PushNotification.configure({
-    // (optional) Called when Token is generated (iOS and Android)
-    onRegister: function (token) {
-      console.log('TOKEN:', token);
-    },
     // (required) Called when a remote is received or opened, or local notification is opened
-    onNotification: function (notification) {
-      console.log('NOTIFICATION:', notification);
-    },
+    onNotification: function (notification) {},
     // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
     onAction: function (notification) {
-      console.log('ACTION:', notification.action);
       switch (notification.action) {
-        case presets[0]:
-          EqModule.setBand(15, 0);
-          EqModule.setBand(15, 1);
-          EqModule.setBand(15, 2);
-          EqModule.setBand(-15, 3);
-          EqModule.setBand(-15, 4);
-          EqModule.setBb(1000);
+        case state.presets[0].name:
+          store.dispatch(changePreset(0));
+          show(store);
           break;
-        case presets[1]:
-          EqModule.setBand(0, 0);
-          EqModule.setBand(0, 1);
-          EqModule.setBand(0, 2);
-          EqModule.setBand(0, 3);
-          EqModule.setBand(0, 4);
-          EqModule.setBb(500);
+        case state.presets[1].name:
+          store.dispatch(changePreset(1));
+          show(store);
           break;
-        case presets[2]:
-          EqModule.setBand(-15, 0);
-          EqModule.setBand(-15, 1);
-          EqModule.setBand(-15, 2);
-          EqModule.setBand(15, 3);
-          EqModule.setBand(15, 4);
-          EqModule.setBb(0);
+        case state.presets[2].name:
+          store.dispatch(changePreset(2));
+          show(store);
       }
     },
     popInitialNotification: false,
@@ -49,10 +30,13 @@ export function initialize(presetsNew) {
   });
 }
 
-export function show(activePreset) {
+export function show() {
+  const state = store.getState();
+  const activePreset = state.activePreset;
+  const presets = state.presets.map((preset) => preset.name);
+  const presetName = state.presets[activePreset].name;
   PushNotification.channelExists(channelId, (exists) => {
     PushNotification.cancelAllLocalNotifications();
-    console.log(exists);
     if (!exists) {
       PushNotification.createChannel({
         channelId: channelId, // (required)
@@ -64,7 +48,7 @@ export function show(activePreset) {
     PushNotification.localNotification({
       channelId: channelId, // (required) channelId, if the channel doesn't exist, it will be created with options passed above (importance, vibration, sound). Once the channel is created, the channel will not be update. Make sure your channelId is different if you change these options. If you have created a custom channel, it will apply options of the channel.
       actions: presets, // (Android only) See the doc for notification actions to know more
-      message: `Active preset: ${presets[activePreset]}`, // (required)
+      message: `Active preset: ${presetName}`, // (required)
       ongoing: true,
       autoCancel: false,
       playSound: false,
