@@ -3,6 +3,8 @@ package com.reactnative_eq;
 import com.rnfs.RNFSPackage;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
@@ -50,6 +52,8 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+
+    startService(new Intent(this, EqService.class));
   }
 
   /**
