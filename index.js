@@ -1,7 +1,7 @@
 import {AppRegistry, Linking, ToastAndroid} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
-import * as NotificationService from './src/NotificationService';
+// import * as NotificationService from './src/NotificationService';
 import store from './state/store';
 import {changePreset, setState} from './state/actions';
 import * as BbEnableService from './src/BbEnableService';
@@ -12,18 +12,18 @@ import * as FileService from './src/FileService';
 async function openSpotify() {
   const supported = await Linking.canOpenURL('spotify://');
   if (supported) {
-    await Linking.openURL('spotify://');
+    // await Linking.openURL('spotify://');
   } else {
     ToastAndroid.show('Could not open Spotify', ToastAndroid.LONG);
   }
 }
 
 function initialization() {
-  NotificationService.initialize();
+  // NotificationService.initialize();
   EqModule.setStatus(true, () => {
     store.dispatch(changePreset(store.getState().activePreset));
     BbEnableService.start();
-    NotificationService.show();
+    // NotificationService.show();
     openSpotify().then(() => {});
   });
 }

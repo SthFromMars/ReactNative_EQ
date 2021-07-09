@@ -9,4 +9,9 @@ export default {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  presets: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 };

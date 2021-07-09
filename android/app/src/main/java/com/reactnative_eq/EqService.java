@@ -13,17 +13,6 @@ import androidx.core.app.NotificationCompat;
 
 public class EqService extends Service {
 
-//    @Nullable
-//    @Override
-//    public IBinder onBind(Intent intent) {
-//        return null;
-//    }
-//
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        return super.onStartCommand(intent, flags, startId);
-//    }
-
     private static final int NOTIF_ID = 1;
     private static final String NOTIF_CHANNEL_ID = "Persistence_Channel";
 
