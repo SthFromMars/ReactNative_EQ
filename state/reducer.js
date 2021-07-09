@@ -27,7 +27,7 @@ const initialState = {
     {
       name: 'Headphones',
       eq: [3, 0, -3, 1, 5],
-      bb: 750,
+      bb: 1000,
     },
   ],
   bbIsSupported: false,
